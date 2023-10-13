@@ -1,0 +1,66 @@
+package com.snapdeal;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.SendKeysAction;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en.When;
+import io.github.bonigarcia.wdm.WebDriverManager;
+
+public class AddToCart {
+	WebDriver driver;
+	@Given("User must be on the SnapDeal Home Page")
+	public void user_must_be_on_the_SnapDeal_Home_Page() {
+		WebDriverManager.chromedriver().setup();
+	    driver = new ChromeDriver();
+	    driver.get("https://www.snapdeal.com/");
+	    driver.manage().window().maximize();
+	}
+
+	@When("Selecting educational toys in the the toys category")
+	public void selecting_educational_toys_in_the_the_toys_category() {
+	    Actions action = new Actions(driver);
+	    action.moveToElement(driver.findElement(By.xpath("(//span[@class=\"catText\"])[4]"))).perform();
+	    driver.findElement(By.xpath("//span[text()=\"Educational Toys\"]")).click();
+	}
+  
+	@When("Enter your Pincode")
+	public void enter_your_Pincode() {
+	    driver.findElement(By.xpath("//input[@placeholder=\"Enter your pincode\"]")).sendKeys("622001");
+        driver.findElement(By.xpath("(//button[@type=\"button\"])[3]")).click();
+	}
+	@When("Applying filters - offer")
+	public void applying_filters_offer() throws InterruptedException {
+		Thread.sleep(3000);
+		driver.findElement(By.xpath("//label[@for='avgRating-4.0']")).click();
+	}
+	@When("Selecting the E Note Pad from that")
+	public void selecting_the_E_Note_Pad_from_that() throws InterruptedException {
+		Thread.sleep(2000);
+	    driver.findElement(By.xpath("//p[contains(text(),'E-Note Pad')]")).click();
+	}
+	@When("Add that product to cart")
+	public void add_that_product_to_cart() throws InterruptedException {
+		Set<String> windowHandles = driver.getWindowHandles();
+		List<String> list = new ArrayList<String>(windowHandles);
+		driver.switchTo().window(list.get(1));
+		driver.findElement(By.xpath("//span[text()='add to cart']")).click();
+	}
+
+	@Then("Product added to the cart")
+	public void product_added_to_the_cart() {
+	    WebElement txt = driver.findElement(By.xpath("//span[@class=\"mess-text\"]"));
+	    String text = txt.getText();
+	    System.out.println(text);
+	}
+}
